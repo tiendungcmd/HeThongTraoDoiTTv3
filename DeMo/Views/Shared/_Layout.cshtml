@@ -1,0 +1,183 @@
+﻿
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hệ Thông Quản Lý</title>
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/Content/admin/plugins/fontawesome-free/css/all.min.css">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/Content/admin/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/admin/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/admin/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="~/Content/admin/dist/css/adminlte.min.css">
+    <!--Style cho bảng trong admin-->
+   @*<style>
+        body {
+            color: #404E67;
+            background: #F5F7FA;
+            font-family: 'Open Sans', sans-serif;
+        }
+        table, th, td {
+            border: 1px solid #91f5e5;
+            font-size:small;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+            cursor: pointer;
+        }
+       
+    </style>*@
+</head>
+<body class=" sidebar-mini">
+    <div class="wrapper">
+        <!-- Navbar -->
+        <!-- /.navbar -->
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+            <!-- Brand Logo -->
+            <a href="../../index3.html" class="brand-link">
+                <img src="~/Content/admin/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+                <span class="brand-text font-weight-light">Quản Lý</span>
+            </a>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Sidebar user (optional) -->
+                <!-- SidebarSearch Form -->
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                        <!-- Add icons to the links using the .nav-icon class
+                        with font-awesome or any other icon font library -->
+
+
+                        @{
+                            var id = Session["UserName"];
+
+                        }
+                        @{
+                            if (Session["UserName"] == null)
+                            {
+
+                                Response.Redirect("~/Login");
+
+                            }
+                            else
+
+                            if (Session["MaGV"] != null)
+                            {
+                                <li class="nav-item">
+                                    <a href="/GiaoViens" class="nav-link">
+                                        <i class="nav-icon fas fa-th"></i>
+                                        <p>
+                                            Danh Sách Học Sinh
+                                        </p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/GiaoViens/ThongBao" class="nav-link">
+                                        <i class="nav-icon fas fa-copy"></i>
+                                        <p>
+                                            Danh Sách Thông Báo
+                                        </p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/GiaoVien/Logout" class="nav-link">
+                                        <i class="fas fa-sliders-h"></i>
+                                        <p>
+                                            Đăng Xuất
+                                        </p>
+                                    </a>
+                                </li>
+
+                            }
+                            else if(Session["UserName"]!=null)
+                            {
+                                <li class="nav-item">
+                                    <a href="/AD/Index" class="nav-link">
+                                        <i class="nav-icon fas fa-copy"></i>
+                                        <p>
+                                            DS Giáo Viên
+                                        </p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/AD/Lop" class="nav-link">
+                                        <i class="nav-icon fas fa-copy"></i>
+                                        <p >
+                                            DS Lớp Học
+                                        </p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/AD/ThongBao" class="nav-link">
+                                        <i class="nav-icon fas fa-copy"></i>
+                                        <p>
+                                            Quản Lý Thông Báo
+                                        </p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/AD/Logout" class="nav-link">
+                                        <i class="fas fa-sliders-h"></i>
+                                        <p>
+                                            Đăng Xuất
+                                        </p>
+                                    </a>
+                                </li>
+
+                            }
+
+                        }
+
+
+                    </ul>
+                </nav>
+                <!-- /.sidebar-menu -->
+            </div>
+            <!-- /.sidebar -->
+        </aside>
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <!-- Main content -->
+            <img src="~/Content/image/logo.png" width="100%" height="200px" />
+
+            <div class="container mt-3">
+
+
+                @RenderBody()
+
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+        <!-- /.content-wrapper -->
+        <footer class="main-footer">
+            <strong>Copyright &copy; 2020-2021 <a href="https://adminlte.io">BuiTienDung</a></strong>
+        </footer>
+
+        <!-- Control Sidebar -->
+        <!-- /.control-sidebar -->
+    </div>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    <script src="~/Content/admin/paging/paginate.js"></script>
+    <script src="~/Content/admin/paging/jquery.twbsPagination.min.js"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

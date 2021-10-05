@@ -1,0 +1,54 @@
+﻿
+@model IEnumerable<DeMo.Models.models.HocSinhViewModel>
+@{
+    Layout = "~/Views/Shared/LayoutUser.cshtml";
+}
+@using System.Globalization;
+
+<style>
+    table, th, td {
+        padding: 5px;
+    }
+</style>
+<div class="tach" style="text-align:center"><b>THÔNG TIN HỌC SINH</b></div>
+
+
+
+<div>
+    <table border="0">
+
+
+        @foreach (var item in Model)
+        {
+            int y = 0;
+            <tr>
+                <td>
+                    <b> Họ Và Tên :</b> @Html.DisplayFor(modelItem => item.TenHS)
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <b>  Ngày Sinh :</b> @item.NgaySinh.ToString("dd/M/yyyy", CultureInfo.InvariantCulture)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <b> @item.TenLop</b>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <b>Giới Tính :</b> @item.GioiTinh
+                </td>
+
+            </tr>
+
+            <tr>
+                <td> <b>Địa Chỉ :</b> @item.DiaChi</td>
+            </tr>
+            <tr> <td><b>Email:</b> @item.Email</td></tr>
+        }
+
+    </table>
+</div>

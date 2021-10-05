@@ -1,0 +1,381 @@
+﻿
+@*@{
+    var idThongBao = @ViewData["idTB"];
+}*@
+<script src="~/Content/admin/jquery.twbsPagination.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="~/Content/admin/paging/jquery.twbsPagination.min.js"></script>
+<style>
+    body {
+        color: #404E67;
+        background: #F5F7FA;
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    table, th, td {
+        border: 1px solid #b4a6a6;
+        font-size: small;
+    }
+
+    table {
+        border-collapse: collapse;
+    }
+
+    tr:hover {
+        background-color: #ddd;
+        cursor: pointer;
+    }
+</style>
+
+<input type="hidden" id="customInput" data-value="@ViewData["idLop"]" />
+
+
+<button id="btnAdd" class="btn btn-success btn-sm"><i class="fa fa-plus" aria-hidden="true"></i>Thêm Học Sinh</button>
+
+<h3>Danh sách học sinh lớp @ViewData["idLop"]</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+               Mã Học Sinh
+            </th>
+            <th>Tên Học Sinh</th>
+
+            <th>
+                Giới Tính
+            </th>
+            <th>
+                Ngày sinh
+            </th>
+            <th>
+                Địa Chỉ
+            </th>
+            <th>
+                Số Điện Thoại
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="dsHS"></tbody>
+</table>
+<div id="pagination" class="pagination">
+
+</div>
+
+<div class="container">
+
+    <!-- Trigger the modal with a button -->
+    @*<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" id="btnAdd">Open Modal</button>*@
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header ">
+                    <h3 class="modal-title">Thông tin Học Sinh</h3>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+                </div>
+                <div class="modal-body">
+                    <input type="text" hidden id="idLop" value="" />
+                    <!-- form nhập thông tin-->
+                    <!--Mã giáo viên, tên giáo viêns-->
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="inputEmail4">Mã học sinh</label>
+                            <input type="text" class="form-control" id="maHS" placeholder="HS01">
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label for="inputPassword4">Tên Học Sinh</label>
+                            <input type="text" class="form-control" id="tenHS">
+                        </div>
+                    </div>
+
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="inputEmail4">Số điện thoại</label>
+                            <input type="text" class="form-control" id="SDT">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="inputPassword4">Ngày Sinh</label>
+                            <input type="text" class="form-control" id="ngaySinh" placeholder="year/month/day">
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="inputState">Giới Tính</label>
+                        <select id="gioiTinh" class="form-control">
+                            <option selected>Nam</option>
+                            <option>Nữ</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputAddress2">Địa Chỉ</label>
+                        <input type="text" class="form-control" id="diaChi">
+                    </div>
+                    <div class="form-group">
+                        <label for="inputAddress2">Email</label>
+                        <input type="text" class="form-control" id="email">
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="btnSubmit">Xác nhận</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+@section scripts{
+    <script>
+        var ad = {
+            pageSize: 5,
+            pageIndex: 1
+        }
+        //hàm chính
+        $(function () {
+            //lấy dữ liệu từ viewData
+            var idThongBao = $("#customInput").data("value");
+            loadDsHS(idThongBao);
+        })
+        //button  -- button thêm học sinh
+        $('#btnAdd').click(function () {
+
+            $('#myModal').modal();
+        })
+
+        //button xóa giáo viên trong bảng
+        $(document).on('click', '.btnDel', function () {
+            //lấy id trong bảng
+            let idHS = $(this).data('id');
+            //lấy dữ liệu từ viewData
+            var idThongBao = $("#customInput").data("value");
+            //hỏi có muốn xóa
+            if (confirm("Bạn có muốn xóa học sinh không?")) {
+                //xóa lớp được chọn dùng ajax
+                $.ajax({
+                    url: '/AD/DelHS',
+                    type: 'post',
+                    data: {
+                        maHS: idHS,
+                        maLop: idThongBao
+                    },
+                    success: function (data) {
+                        if (data.code = 200) {
+
+                            alert(data.msg);
+
+                            $('#maGV').val('');
+                            loadDsHS(idThongBao);
+                        } else {
+                            alert(data.msg);
+                        }
+                    }
+                })
+
+            } else {
+
+            }
+        })
+
+        //button SAVE trong modal
+        $('#btnSubmit').click(function () {
+            let maHS = $('#maHS').val().trim();
+            let tenHS = $('#tenHS').val().trim();
+            let SDT = $('#SDT').val();
+            let ngaySinh = $('#ngaySinh').val();
+            let gioiTinh = $('#gioiTinh').val();
+            let diaChi = $('#diaChi').val().trim();
+            let email = $('#email').val().trim();
+
+            //lấy dữ liệu từ viewData
+            var idThongBao = $("#customInput").data("value");
+
+
+
+            //kiểm tra dữ liệu
+            if (maHS.length == 0 || tenHS.length == 0 || SDT.length == 0 ||
+                ngaySinh.length == 0 || gioiTinh.length == 0 || diaChi.length == 0 ||
+                email.length == 0
+            ) {
+                alert('Vui lòng nhập đầy đủ dữ liệu');
+                return;
+            }
+
+            //kiểm tra nhiệm vụa của button trong modal
+            let idLop = $('#idLop').val().trim();
+            if (idLop.length == 0) {
+                // dùng ajax thêm mới dữ liệu
+                $.ajax({
+                    url: '/AD/AddHS',
+                    type: 'post',
+                    data: {
+                        //gán tham số
+                        maHS: maHS,
+                        tenHS: tenHS,
+                        SDT: SDT,
+                        ngaySinh: ngaySinh,
+                        gioiTinh: gioiTinh,
+                        diaChi: diaChi,
+                        email: email,
+                        idLop: idThongBao
+                    },
+
+                    success: function (data) {
+                        if (data.code == 200) {
+                            alert('Thêm thành công');
+                            //xóa lịch sử
+                            $('#maHS').val('');
+                            $('#tenHS').val('');
+                            $('#SDT').val('');
+                            $('#ngaySinh').val('');
+                            $('#gioiTinh').val('');
+                            $('#diaChi').val('');
+                            $('#email').val('');
+                            loadDsHS(idThongBao);
+                        } else {
+                            alert(data.msg);
+                        }
+                    }
+                })
+            } else {
+                //cập nhật dữ liệu
+                //cập nhật dữ liệu
+                $.ajax({
+                    url: '/AD/EditHS',
+                    type: 'post',
+                    data: {
+                        maHS: maHS,
+                        tenHS: tenHS,
+                        SDT: SDT,
+                        ngaySinh: ngaySinh,
+                        gioiTinh: gioiTinh,
+                        diaChi: diaChi,
+                        email: email
+                    },
+                    success: function (data) {
+                        if (data.code = 200) {
+                            alert(data.msg);
+                            // dong modal
+                            $('#myModal').modal('hide');
+                            // load lai danh sach giao vien
+                            loadDsHS(idThongBao);
+                        }
+                        else {
+                            alert(data.msg);
+                        }
+                    }
+                })
+            }
+
+           
+        })
+
+        //button sửa giáo viên trong bảng
+        $(document).on('click', '.btnDetail', function () {
+            let idHS = $(this).data('id');
+            $.ajax({
+                url: '/AD/DetailHS',
+                type: 'GET',
+                data: {
+                    id: idHS
+                },
+                success: function (data) {
+                    //neu dung gan data cho form modal
+
+                    if (data.code == 200) {
+
+                        $.each(data.detailGv, function (k, v) {
+
+                            $('#maHS').val(v.MaHS);
+                            $('#tenHS').val(v.TenHS);
+                            $('#SDT').val(v.SDT);
+                            $('#ngaySinh').val(v.NgaySinh);
+                            $('#gioiTinh').val(v.GioiTinh);
+                            $('#diaChi').val(v.DiaChi);
+                            $('#email').val(v.email);
+
+                        })
+
+                        //kiểm tra nút bấm -gán nhiệm vụ 
+                        $('#idLop').val(idHS);
+                        //không cho chỉnh sửa
+                        $('#maHS').prop('readonly', true);
+                        $('#myModal').modal();
+
+                    } else {
+                        alert(data.msg);
+                    }
+
+                }
+            })
+        })
+        //lấy danh sách học sinh theo lớp học
+        function loadDsHS(id) {
+            $.ajax({
+                url: '/AD/dsHS',
+                type: 'get',
+                data: {
+                    page: ad.pageIndex,
+                    pageSize: ad.pageSize,
+                    id: id
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+
+                        //xóa danh sách
+                        $('#dsHS').empty();
+                        $.each(data.dsHS, function (k, v) {
+                            let tr = '<tr>';
+                            tr += '<td>' + v.MaHS + '</td>';
+                            tr += '<td> <a class="btn" href="/AD/diemHSHK1/' + v.MaHS + '"> ' + v.TenHS + ' </a></td>';
+
+                            tr += '<td>' + v.GioiTinh + '</td>';
+                            tr += '<td>' + v.NgaySinh + '</td>';
+                            tr += '<td>' + v.DiaChi + '</td>';
+                            tr += '<td>' + v.SDT + '</td>';
+
+                            tr += '<td><button class="btnDetail btn btn-sm btn-info "name ="view" data-id="' + v.MaHS + '">Edit</button> ';
+                            tr += '<button class="btn btn-sm btn-danger btnDel" name ="delete" data-id="' + v.MaHS + '"><i class="fa fa-trash" aria-hidden="true"></i></button> ';
+                            tr += '</td>';
+
+                            tr += '</tr>';
+
+                            $('#dsHS').append(tr);
+                        })
+
+                        // add data
+                        page(data.total, function () {
+                            loadDsHS(id);
+                        })
+                    }
+                }
+
+            })
+        }
+        // phân trang
+        function page(totalRow, callback) {
+            var totalPage = Math.ceil(totalRow / ad.pageSize);
+            $('#pagination').twbsPagination({
+                totalPages: totalPage,
+                visiblePages: 3,
+                first: "<<",
+                last: ">>",
+                next: ">",
+                prev: "<",
+                onPageClick: function (event, page) {
+                    ad.pageIndex = page;
+                    setTimeout(callback, 200);
+                }
+            });
+        };
+    </script>
+}

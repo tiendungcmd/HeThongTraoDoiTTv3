@@ -1,0 +1,209 @@
+﻿
+<script src="~/Content/admin/jquery.twbsPagination.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="~/Content/admin/paging/jquery.twbsPagination.min.js"></script>
+
+<style>
+    body {
+        font-weight: lighter;
+    }
+</style>
+
+
+<!--Vị trí model-->
+
+@{
+    var idThongBao = @ViewData["idTB"];
+}
+<input type="hidden" id="customInput" data-value="@ViewData["idTB"]" />
+
+
+
+<div class="container">
+    @*danh sasch thong bao*@
+    <div>
+        <table id="BL">
+        </table>
+    </div>
+
+
+    <br />
+    @*danh sach binh luan*@
+    <div>
+        <table>
+
+            <thead>
+
+                <tr></tr>
+                <tr>
+                    <td><b>Phản hồi</b></td>
+                </tr>
+
+
+            </thead>
+            <tbody id="dsBL">
+            </tbody>
+        </table>
+    </div>
+    <!--Để lại bình luận-->
+    <div class="col-11">
+
+        <label for="comment">Comment:</label>
+        @*<input type="text" class="form-control" id="bl" placeholder="GV01">*@
+        <textarea class="form-control" id="bl" rows="3"></textarea>
+        <a class="btn btn-sm btn-outline-dark btnGui">
+            <i class="fa fa-paper-plane" aria-hidden="true"></i> Gửi
+        </a>
+
+    </div>
+
+</div>
+@section scripts{
+    <script>
+        
+        //hàm chính
+        $(function () {
+            //lấy dữ liệu từ viewData
+            var idThongBao = $("#customInput").data("value");
+            loadDetail(idThongBao);
+            loadBL(idThongBao);
+        })
+
+
+        //button gui
+        $('.btnGui').click(function () {
+            //lấy date hiện tại
+            var d = new Date();   
+            var date = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+            //lấy di thông báo
+            let comment = $('#bl').val();
+           
+            //lấy dữ liệu từ viewData(mã thông baos)
+            var idThongBao = $("#customInput").data("value");
+            $.ajax({
+                url: '/AD/addBL',
+                type: 'post',
+                data: {
+                    NoiDungBL: comment,
+                    MaThongBao: idThongBao,
+                    ngayBL: date
+                },
+                success: function (data) {
+                    //xóa dữ liệu bình luận cũ
+                  
+                   
+                    if (data.code == 200) {
+                       
+                        $('#dsBL').empty();
+                        $('#bl').val('');
+                        loadBL(idThongBao);
+                        
+                    } else {
+                        alert(data.msg);
+                    }
+                }
+            })
+        })
+
+        //button xoa
+        $(document).on('click', '.btnDel', function () {
+            //lấy id ở chính thẻ đó
+            let idBL = $(this).data('id');
+            //lấy dữ liệu từ viewData(mã thông báo) để tải lại bình luận
+            var idThongBao = $("#customInput").data("value");
+
+
+            if (confirm("Bạn có chắc xóa?")) {
+                $.ajax({
+                    url: '/AD/deleteBL',
+                    type: 'post',
+                    data: { maBL: idBL },
+                    success: function (data) {
+                        if (data.code == 200) {
+                 
+                            $('#dsBL').empty();
+                            loadBL(idThongBao);
+                        } else {
+                            alert(data.msg);
+                        }
+                    }
+
+                })
+            } else {
+                return false;
+            }
+        })
+
+        //xem chi tiết thông báo
+        function loadDetail(id) {
+
+            //goi ajax
+            $.ajax({
+                url: '/AD/detailTB',
+                type: 'get',
+                data: { id: id },
+                success: function (data) {
+
+                    if (data.code == 200) {
+                        //lay du lieu ten thong bao
+
+                        $.each(data.dstb, function (k, v) {
+
+                            let tr = '<tr> <td>';
+                            tr += ' <h3><b>' + v.TieuDe + '<b></h3></td></tr>';
+                            tr += '<tr><td><b>Giáo Viên :</b>' + v.TenGV + '</td></tr>';
+                            tr += '<tr><td><b>Ngày       :</b>' + v.NgayTB + '</td></tr>';
+                            tr += '<tr><td><b>Nội dung :<br></b>' + v.NoiDung + '</td></tr>';
+
+                            $('#BL').append(tr);
+                        })
+                    } else {
+                        alert(data.code);
+                    }
+                }
+            })
+        }
+
+        //tải bình luận
+        function loadBL(id) {
+            $.ajax({
+                url: '/AD/detailBL',
+                type: 'get',
+                data: {
+                    id: id
+                },
+                success: function (data) {
+                    if (data.code = 200) {
+                        $.each(data.dsBl, function (k, v) {
+                            if (v.tenPH == null) {
+                                let tr = '<tr>';
+                                tr += '<td><i class="fa fa-user-circle" aria-hidden="true"></i>';
+                                tr += 'Admin :' + v.noiDung;
+                                tr += '<a class="btn btn-sm btn-outline-dark btnDel" data-id="'
+                                    + v.maBL + '"><i class="fa fa-trash " aria-hidden="true"></i> Xóa</a></td></tr>';
+
+                                tr += '<tr><td>--------------------------------<td></tr>';
+                                $('#dsBL').append(tr);
+                            } else {
+                                let tr = '<tr>';
+                                tr += '<td><i class="fa fa-user-circle" aria-hidden="true"></i>';
+                                tr += v.tenPH + ' :' + v.noiDung;
+                                tr += '<a class="btn btn-sm btn-outline-dark btnDel" data-id="'
+                                    + v.maBL + '"><i class="fa fa-trash " aria-hidden="true"></i> Xóa</a></td></tr>';
+
+                                tr += '<tr><td>--------------------------------<td></tr>';
+                                $('#dsBL').append(tr);
+                            }
+                          
+                        })
+                    } else {
+                        alert(data.msg);
+                    }
+                }
+            })
+        }
+
+       
+       
+    </script>
+}

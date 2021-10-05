@@ -1,0 +1,458 @@
+﻿
+@{
+    ViewBag.Title = "ADIndex";
+}
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Content/admin/jquery.twbsPagination.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="~/Content/admin/paging/jquery.twbsPagination.min.js"></script>
+<style>
+    body {
+        color: #404E67;
+        background: #F5F7FA;
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    table, th, td {
+        border: 1px solid #71f8f0;
+        font-size: small;
+    }
+
+    table {
+        border-collapse: collapse;
+    }
+
+    tr:hover {
+        background-color: #ddd;
+        cursor: pointer;
+    }
+</style>
+
+<div><p>Danh sách giáo viên THCS</p></div>
+<button id="btnAdd" class="btn btn-success btn-sm">Thêm Giáo Viên</button>
+<table class="table">
+    <thead>
+        <tr>
+
+            <th>Mã GV</th>
+            <th>Tên Giáo Viên</th>
+
+            <th>
+                Giới Tính
+            </th>
+            <th>
+                Ngày sinh
+            </th>
+            <th>
+                Địa Chỉ
+            </th>
+            <th>
+                Số Điện Thoại
+            </th>
+            <th>
+                Dạy Môn
+            </th>
+            <th>
+                Dạy Lớp
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="tblDsGV"></tbody>
+
+</table>
+<div id="pagination" class="pagination">
+
+</div>
+<!--Model hien thi-->
+
+<div class="container">
+
+    <!-- Trigger the modal with a button -->
+    @*<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" id="btnAdd">Open Modal</button>*@
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header ">
+                    <h3 class="modal-title">Thông tin giáo viên</h3>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+                </div>
+                <div class="modal-body">
+                    <input type="text" hidden id="idLop" value="" />
+                    <!-- form nhập thông tin-->
+                    <!--Mã giáo viên, tên giáo viêns-->
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="inputEmail4">Mã giáo viên</label>
+                            <input type="text" class="form-control" id="maGV" placeholder="GV01">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="inputPassword4">Tên Giáo Viên</label>
+                            <input type="text" class="form-control" id="tenGV">
+                        </div>
+                    </div>
+
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="inputEmail4">Số điện thoại</label>
+                            <input type="text" class="form-control" id="SDT">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="inputPassword4">Ngày Sinh</label>
+                            <input type="text" class="form-control" id="ngaySinh" placeholder="year/month/day">
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="inputState">Giới Tính</label>
+                        <select id="gioiTinh" class="form-control">
+                            <option selected>Nam</option>
+                            <option>Nữ</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputAddress2">Địa Chỉ</label>
+                        <input type="text" class="form-control" id="diaChi">
+                    </div>
+
+                    <div class="form-row">
+                        <!--Bộ môn-->
+                        <div class="form-group col-md-4">
+                            <label for="inputState">Bộ Môn</label>
+                            <select id="dsMh" class="form-control">
+                            </select>
+                        </div>
+                        <!--Lớp-->
+                        <div class="form-group col-md-4">
+                            <label for="inputState">Lớp</label>
+                            <select id="dsLop" class="form-control">
+                            </select>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="btnSubmit">Xác nhận</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        var ad = {
+            pageSize: 5,
+            pageIndex: 1
+        }
+        // hàm chính
+        $(function () {
+            LoadDsGV();
+            //lay danh sách môn học
+            dsMonHoc();
+            LoadDsLop();
+
+        });
+
+        //button  hiển thị Modal
+        $('#btnAdd').click(function () {
+            $('#idLop').val('');
+            //xóa lịch sử - gán giá trị ban đầu
+            $('#maGV').prop('readonly', false);
+            $('#maGV').val('');
+            $('#tenGV').val('');
+            $('#SDT').val('');
+            $('#ngaySinh').val('');
+            $('#gioiTinh').val('');
+            $('#diaChi').val('');
+
+            $('#myModal').modal();
+        });
+
+        //button SAVE trong modal
+        $('#btnSubmit').click(function () {
+            let maGV = $('#maGV').val().trim();
+            let tenGV = $('#tenGV').val().trim();
+            let SDT = $('#SDT').val();
+            let ngaySinh = $('#ngaySinh').val();
+            let gioiTinh = $('#gioiTinh').val();
+            let diaChi = $('#diaChi').val().trim();
+            let monHoc = $('#dsMh').val();
+            let Lop = $('#dsLop').val();
+
+
+            //kiểm tra dữ liệu
+            if (maGV.length == 0 || tenGV.length == 0 || SDT.length == 0 ||
+                ngaySinh.length == 0 || gioiTinh.length == 0 || diaChi.length == 0 ||
+                monHoc.length == 0 || Lop.length == 0
+            ) {
+                alert('Vui lòng nhập đầy đủ dữ liệu');
+                return;
+            }
+
+            //kiểm tra nhiệm vụa của button trong modal
+            let idLop = $('#idLop').val().trim();
+            if (idLop.length == 0) {
+
+
+                // dùng ajax thêm mới dữ liệu
+                $.ajax({
+                    url: '/AD/AddGV',
+                    type: 'post',
+                    data: {
+                        //gán tham số
+                        maGV: maGV,
+                        tenGV: tenGV,
+                        SDT: SDT,
+                        ngaySinh: ngaySinh,
+                        gioiTinh: gioiTinh,
+                        diaChi: diaChi,
+                        monHoc: monHoc,
+                        Lop: Lop
+                    },
+                    success: function (data) {
+                        if (data.code == 200) {
+                            alert('Thêm thành công');
+
+
+                            //xóa lịch sử
+                            $('#maGV').val('');
+                            $('#tenGV').val('');
+                            $('#SDT').val('');
+                            $('#ngaySinh').val('');
+                            $('#gioiTinh').val('');
+                            $('#diaChi').val('');
+                            LoadDsGV();
+                        } else {
+                            alert(data.msg);
+                        }
+                    }
+                })
+            } else {
+                //cập nhật dữ liệu
+                $.ajax({
+                    url: '/AD/EditGV',
+                    type: 'post',
+                    data: {
+                        maGV: maGV,
+                        tenGV: tenGV,
+                        SDT: SDT,
+                        ngaySinh: ngaySinh,
+                        gioiTinh: gioiTinh,
+                        diaChi: diaChi,
+                        monHoc: monHoc,
+                        Lop: Lop
+                    },
+                    success: function (data) {
+                        if (data.code = 200) {
+                            alert(data.msg);
+                            // dong modal
+                            $('#myModal').modal('hide');
+                            // load lai danh sach giao vien
+                            LoadDsGV();
+                        }
+                        else {
+                            alert(data.msg);
+                        }
+                    }
+                })
+            }
+
+        });
+
+        //button sửa giáo viên trong bảng
+        $(document).on('click', '.btnDetail', function () {
+            // $('#myModal').modal();
+            //lấy id
+            let idGV = $(this).data('id');
+            //goi ham lay chi tiet giao vien
+            $.ajax({
+                url: '/AD/DetailGv',
+                type: 'GET',
+                data: {
+                    id: idGV
+                },
+                success: function (data) {
+                    //neu dung gan data cho form modal
+
+                    if (data.code == 200) {
+
+                        $.each(data.detailGv, function (k, v) {
+
+                            $('#maGV').val(v.MaGV);
+                            $('#tenGV').val(v.TenGV);
+                            $('#SDT').val(v.SDT);
+                            $('#ngaySinh').val(v.NgaySinh);
+                            $('#gioiTinh').val(v.GioiTinh);
+                            $('#diaChi').val(v.DiaChi);
+                        })
+
+                        //kiểm tra nút bấm -gán nhiệm vụ 
+                        $('#idLop').val(idGV);
+                        //không cho chỉnh sửa
+                        $('#maGV').prop('readonly', true);
+                        $('#myModal').modal();
+
+
+
+                    } else {
+                        alert(data.msg);
+                    }
+
+                }
+            })
+
+        });
+
+        //button xóa giáo viên trong bảng
+        $(document).on('click', '.btnDel', function () {
+            //lấy id
+            let idGV = $(this).data('id');
+
+            //hỏi có muốn xóa
+            if (confirm("Bạn có muốn xóa giáo viên không?")) {
+                //xóa lớp được chọn dùng ajax
+                $.ajax({
+                    url: '/AD/DelGV',
+                    type: 'post',
+                    data: {
+                        maGV: idGV
+                    },
+                    success: function (data) {
+                        if (data.code = 200) {
+
+                            alert(data.msg);
+
+                            $('#maGV').val('');
+                            LoadDsGV();
+                        } else {
+                            alert(data.msg);
+                        }
+                    }
+                })
+
+            } else {
+
+            }
+        })
+
+
+        //lấy dữ liệu danh sách môn học gán vào modal
+        function dsMonHoc() {
+            $.ajax({
+                url: '/AD/DsMonHoc',
+                type: 'get',
+                success: function (data) {
+                    if (data.code = 200) {
+                        $.each(data.dsMH, function (k, v) {
+
+                            let tr = '<option value="' + v.maMH + '">' + v.tenMH + '</option>';
+                            $('#dsMh').append(tr);
+                        })
+                    }
+                }
+            })
+        };
+
+        //lấy danh sách lớp gán vào modal
+        function LoadDsLop() {
+            // dùng ajax load danh sách lớp
+            $.ajax({
+                url: '/AD/DsLop',
+                type: 'get',
+                success: function (data) {
+                    if (data.code == 200) {
+                        //gán DL vào html
+                        $.each(data.ds, function (k, v) {
+                            let tr = '<option value="' + v.MaLop + '">' + v.TenLop + '</option>';
+                            $('#dsLop').append(tr);
+
+                        })
+                    }
+                }
+            })
+        };
+
+        //lấy danh sách giáo viên
+        function LoadDsGV() {
+            // dùng ajax load danh sách lớp
+            $.ajax({
+                url: '/AD/DsGV',
+                type: 'get',
+                data: {
+                    page: ad.pageIndex,
+                    pageSize: ad.pageSize
+                },
+                success: function (data) {
+
+                    if (data.code == 200) {
+
+                        //làm trống table
+                        $('#tblDsGV').empty();
+                        $.each(data.dsGv, function (k, v) {
+
+                            let tr = '<tr>'
+                            tr += '<td>' + v.maGV + '</td>';
+                            tr += '<td>' + v.TenGV + '</td>';
+                            tr += '<td>' + v.GioiTinh + '</td>';
+                            tr += '<td>' + v.NgaySinh + '</td>';
+
+                            tr += '<td>' + v.DiaChi + '</td>';
+                            tr += '<td>' + v.SDT + '</td>';
+                            tr += '<td>' + v.MonHoc + '</td>';
+                            tr += '<td>' + v.Lop + '</td>';
+
+                            tr += '<td>';
+                            tr += '<button class="btnDetail btn btn-sm btn-info "name ="view" data-id="' + v.maGV + '">Edit</button> ';
+                          
+                            tr += '<button class="btn btn-sm btn-danger btnDel" name ="delete" data-id="' + v.maGV + '"><i class="fa fa-trash" aria-hidden="true"></i></button> ';
+                            tr += '</td>';
+                            tr += '</tr>';
+                            $('#tblDsGV').append(tr);
+
+                        })
+
+                        // add data
+                        page(data.total, function () {
+                            LoadDsGV();
+                        })
+                    }
+
+                }
+            })
+        };
+
+        // phân trang
+        function page(totalRow, callback) {
+            var totalPage = Math.ceil(totalRow / ad.pageSize);
+            $('#pagination').twbsPagination({
+                totalPages: totalPage,
+                visiblePages: 3,
+                first: "<<",
+                last: ">>",
+                next: ">",
+                prev: "<",
+                onPageClick: function (event, page) {
+                    ad.pageIndex = page;
+                    setTimeout(callback, 200);
+                }
+            });
+        };
+
+    </script>
+
+}
+
+
+

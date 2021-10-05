@@ -1,0 +1,161 @@
+﻿@{
+    var maHS = @ViewData["maHocSinh"];
+}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+
+    .btn {
+        background-color: #808080; /* Green */
+        border-radius: 8px;
+        color: white;
+        padding: 10px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 13px;
+        margin: 0px;
+        cursor: pointer;
+    }
+
+    .disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+</style>
+<input type="hidden" id="customInput" data-value="@ViewData["maHocSinh"]" />
+<input type="hidden" id="customInput" data-value="@ViewData["maHocSinh"]" />
+
+@*<div class="tach">
+    <b>  Học Sinh: </b>  @ViewData["TenHS"]   ---- <b>Năm Học: </b>@ViewData["TenNH"]
+</div>*@
+<div>
+    <a class="btn" href="/AD/diemHSHK1/@ViewData["maHocSinh"]"> KẾT QUẢ HỌC KÌ 1 </a>
+    <a class="btn" href="/AD/diemHSHK2/@ViewData["maHocSinh"]"> KẾT QUẢ HỌC KÌ 2 </a>
+    <a class="btn disabled"> TỔNG KẾT </a>
+</div>
+
+<div class="container">
+    <div class="row">
+        <table class="table">
+            <thead id="tongKet">
+               
+            </thead>
+            <tbody >
+            </tbody>
+
+            
+        </table>
+    </div>
+    <div id="idTB" class="row">
+
+    </div>
+
+    @*<div style="float:inherit">
+        <b>   Tổng Kết</b>
+        <br />
+        <b>Điểm TBCN: localStorage.getItem('tbcn'); </b>
+        <br />
+
+        @if (Convert.ToDouble(Session["tbvc"]) >= 8)
+        {
+            <b>  Học Lực : Giỏi </b>
+        }
+        @if (Convert.ToDouble(Session["tbvc"]) >= 6.5 && Convert.ToDouble(Session["tbvc"]) < 8)
+        {
+            <b>  Học Lực :   Khá</b>
+        }
+        @if (Convert.ToDouble(Session["tbvc"]) >= 5 && Convert.ToDouble(Session["tbvc"]) < 6.5)
+        {
+            <b>  Học Lực :  Khá </b>
+        }
+        @if (Convert.ToDouble(Session["tbvc"]) > 3.5 && Convert.ToDouble(Session["tbvc"]) < 5)
+        {
+            <b>  Học Lực : Trung Bình</b>
+        }
+    </div>*@
+</div>
+@section scripts{
+    <script>
+        //hàm chinh
+        $(function () {
+            //lấy mã học sinh từ viewData
+            var maHS = $("#customInput").data("value");
+            dsMH(maHS);
+
+        })
+
+        //lấy danh sách môn học
+        function dsMH(id) {
+            $.ajax({
+                url: '/AD/DiemHK2',
+                type: 'get',
+                data: { id: id },
+                success: function (data) {
+                    if (data.code == 200) {
+                        var i = 0;
+                        let hk1 = 0;
+                        let hk2 = 0;
+                        var caNam = 0;
+
+                        $.each(data.diem, function (k, v) {
+                            //let key2 = "hk2" + i;
+                            //let key1 = "hk1" + i;
+
+                            let hk1 = sessionStorage.getItem('hk1' + i);
+                            let hk2 = sessionStorage.getItem('hk2' + i);
+                            //tính điểm tb từng môn
+                            let tb = ((parseFloat(hk1) + parseFloat(hk2) * 2) / 3).toFixed(1);
+
+                            // tính điểm cả năm
+
+                            caNam = parseFloat(caNam) + parseFloat(tb)  ;
+                            //   let caNam2 = caNam
+                          //  caNam2 = caNam2+(parseFloat(caNam) / 11).toFixed(1);
+                            let key = "tbcn";
+                            let tr = '<td>' + v.TenMH + '</td>';
+                            if (v.Nhom < 4) {
+                                if (tb < 5) {
+                                    tr += '<td> KD </td>';
+                                } else {
+                                    tr += '<td> D </td>';
+                                }
+                            } else {
+                                tr += '<td>' + tb + '</td>';
+                            }
+                           
+                          
+
+                            i++;
+                            $('#tongKet').append(tr);
+
+                         
+                        })
+                        let caNam2 =(parseFloat(caNam) / 11).toFixed(1)
+                        let td = '<tr> <td><b>Tổng kết: ' + caNam2 + '<b></td></tr>';
+                        if (caNam2 >= 8) {
+                            td += ' < tr > <td><b>Học Lực:  GIỎI<b></td></tr>';
+                        }
+                        if (caNam2 >= 7 && caNam2 < 8) {
+                            td += ' < tr > <td><b>Học Lực:  KHÁ<b></td></tr>';
+                        }
+                        if (caNam2 >= 5 && caNam2 < 7) {
+                            td += ' < tr > <td><b>Học Lực:  TRUNG BÌNH <b></td></tr>';
+                        }
+                        if (caNam2 >= 3 && caNam2 < 5) {
+                            td += ' < tr > <td><b>Học Lực:  YẾU<b></td></tr>';
+                        }
+                        $('#idTB').append(td);
+                    } else {
+                    }
+                }
+            })
+        }
+
+
+    </script>
+}
+

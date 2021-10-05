@@ -1,0 +1,37 @@
+﻿@model IEnumerable<DeMo.Models.model.HocSinh>
+@{
+    Layout = null;
+}
+
+<table class="table">
+
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                Họ Và Tên : @Html.DisplayFor(modelItem => item.TenHS)
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                Ngày Sinh : @item.NgaySinh
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                Giới Tính : @item.GioiTinh
+            </td>
+
+        </tr>
+        <tr> <td>  @item.LopHoc.TenLop</td></tr>
+        <tr>
+            <td> Địa Chỉ : @item.DiaChi</td>
+        </tr>
+        <tr> <td>Email: @item.Email</td></tr>
+
+    }
+
+</table>

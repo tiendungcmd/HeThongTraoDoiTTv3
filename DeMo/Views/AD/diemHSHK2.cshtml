@@ -1,0 +1,409 @@
+﻿@{
+    var maHS = @ViewData["maHocSinh"];
+}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<input type="hidden" id="customInput" data-value="@ViewData["maHocSinh"]" />
+
+<style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+
+    .btn {
+        background-color: #808080; /* Green */
+        border-radius: 8px;
+        color: white;
+        padding: 10px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 13px;
+        margin: 0px;
+        cursor: pointer;
+    }
+
+    .disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+</style>
+<button class="btn btn-sm btn-success" id="btnAdd"><i class="fa fa-plus" aria-hidden="true"></i>Thêm Điểm</button>
+<div>
+    <table class="table">
+
+        <a class="btn" href="/AD/diemHSHK1/@ViewData["maHocSinh"]"> KẾT QUẢ HỌC KÌ 1 </a>
+        <a class="btn disabled"> KẾT QUẢ HỌC KÌ 2 </a>
+        <a class="btn" href="/AD/diemCuoiKi/@ViewData["maHocSinh"]"> TỔNG KẾT </a>
+        <thead>
+            <tr>
+                <th> Môn Học</th>
+                <th colspan="4"> Điểm TXuyên</th>
+                <th> Điểm Giữa Kì</th>
+                <th> Điểm Cuối Kì</th>
+                <th> Điểm Tổng Kết HK2</th>
+            </tr>
+            <tr></tr>
+        </thead>
+        <tbody id="DiemHK2">
+        </tbody>
+
+    </table>
+</div>
+<!--Model hien thi-->
+
+<div class="container">
+
+    <!-- Trigger the modal with a button -->
+    @*<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" id="btnAdd">Open Modal</button>*@
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Nhập điểm</h3>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-row ">
+                        <div class="form-group col-md-6">
+                            <label for="inputState">Môn học</label>
+                            <select id="dsMonHoc" class="form-control">
+                                <option value="1" selected>---Chọn Môn---</option>
+
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="inputState">Giáo Viên</label>
+                            <select id="dsGV" class="form-control">
+                                <option value="1" selected>---Giáo Viên---</option>
+
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="inputEmail4">Điểm KT 15p</label>
+                                <input type="text" class="form-control" id="diemTx1" placeholder="Nhập điểm...">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="inputEmail4">Điểm KT 15p</label>
+                                <input type="text" class="form-control" id="diemTx2" placeholder="Nhập điểm.....">
+                            </div><div class="form-group col-md-4">
+                                <label for="inputEmail4">Điểm KT 15p</label>
+                                <input type="text" class="form-control" id="diemTx3" placeholder="Nhập điểm.....">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="inputEmail4">Điểm KT 1 Tiết</label>
+                                <input type="text" class="form-control" id="diemTx4" placeholder="Nhập điểm...">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="inputEmail4">Điểm giữa kì</label>
+                                <input type="text" class="form-control" id="diemGK" placeholder="Nhập điểm.....">
+                            </div><div class="form-group col-md-4">
+                                <label for="inputEmail4">Điểm cuối kì</label>
+                                <input type="text" class="form-control" id="diemCK" placeholder="Nhập điểm.....">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="btnSubmit">Save changes</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+    @section scripts{
+        <script>
+        $(function () {
+            //lấy mã học sinh từ viewData
+            var maHS = $("#customInput").data("value");
+            diemHSHK1(maHS);
+            dsMonHoc();
+        })
+
+        //click button submit trong modal
+        $('#btnSubmit').click(function () {
+            var maHS = $("#customInput").data("value");
+          //  alert(maHS);
+            let MaGV = $('#dsGV').val();
+            let MaMH = $('#dsMonHoc').val();
+            let diemTx1 = $('#diemTx1').val().trim();
+            let diemTx2 = $('#diemTx2').val().trim();
+            let diemTx3 = $('#diemTx3').val().trim();
+            let diemTx4 = $('#diemTx4').val().trim();
+            let diemGK = $('#diemGK').val().trim();
+            let diemCK = $('#diemCK').val().trim();
+
+            //kiểm tra dữ liệu
+            if (MaGV.length == 0 || diemTx1.length == 0 || diemTx2.length == 0 ||
+                diemTx3.length == 0 || diemTx4.length == 0 || diemGK.length == 0 ||
+                diemCK.length == 0 || maHS.length == 0
+            ) {
+                alert('Vui lòng nhập đầy đủ dữ liệu');
+                return;
+            }
+            //dùng ajax
+            $.ajax({
+                url: '/AD/addDiemHK2',
+                type: 'post',
+                data: {
+                    MaGV: MaGV,
+                    diemTx1: diemTx1,
+                    diemTx2: diemTx2,
+                    diemTx3: diemTx3,
+                    diemTx4: diemTx4,
+                    diemGK: diemGK,
+                    diemCK: diemCK,
+                    maHS: maHS,
+                    MaMH: MaMH
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        alert('Thêm thành công');
+                        //xoa lich su
+                        $('#dsMonHoc').val('');
+                        $('#diemTx1').val('');
+                        $('#diemTx2').val('');
+                        $('#diemTx3').val('');
+                        $('#diemTx4').val('');
+                        $('#diemGK').val('');
+                        $('#diemCK').val('');
+
+                        diemHSHK1(maHS);
+                    } else {
+                        alert(data.msg);
+                    }
+                }
+
+            })
+
+        })
+
+        //button thêm
+        $('#btnAdd').click(function () {
+            $('#myModal').modal();
+        })
+        //lấy điểm học sinh
+        function diemHSHK1(id) {
+            $.ajax({
+                url: '/AD/DiemHK2',
+                type: 'get',
+                data: { id: id },
+                success: function (data) {
+
+                    if (data.code == 200) {
+                        $('#DiemHK2').empty();
+                        var i = 0;
+                        $.each(data.diem, function (k, v) {
+                            //tính điểm tổng kết
+                            var x = (v.DiemTx1 + v.DiemTx2 + v.DiemTx3 + v.DiemTx4 + v.DiemGK * 2 + (v.DiemCK * 3));
+                            var y = (parseFloat(x) / 9).toFixed(1);
+                            let key = "hk2" + i;
+                            let tr = '<tr>';
+                            if (v.Nhom < 4) {
+                                tr += '<td>' + v.TenMH + '</td>';
+                                if (v.DiemTx1 < 5) {
+                                    tr += '<td><p> KD</p></td>';
+                                } else {
+                                    tr += '<td><p> D </p></td>';
+                                }
+                                if (v.DiemTx2 < 5) {
+                                    tr += '<td><p> KD</p></td>';
+                                } else {
+                                    tr += '<td><p> D </p></td>';
+                                }
+                                if (v.DiemTx3 < 5) {
+                                    tr += '<td><p> KD</p></td>';
+                                } else {
+                                    tr += '<td><p> D </p></td>';
+                                }
+                                if (v.DiemTx4 < 5) {
+                                    tr += '<td><p> KD</p></td>';
+                                } else {
+                                    tr += '<td><p> D </p></td>';
+                                }
+                                if (v.DiemGK < 5) {
+                                    tr += '<td><p> KD</p></td>';
+                                } else {
+                                    tr += '<td><p> D </p></td>';
+                                }
+                                if (v.DiemCK < 5) {
+                                    tr += '<td><p> KD</p></td>';
+                                } else {
+                                    tr += '<td><p> D </p></td>';
+                                }
+                                if (y > 5) {
+                                    tr += '<td><p> D</p></td>';
+                                } else {
+                                    tr += '<td><p> KD </p></td>';
+                                }
+                            } else {
+                                tr += '<td>' + v.TenMH + '</td>';
+                                tr += '<td>' + v.DiemTx1 + '</td>';
+                                tr += '<td>' + v.DiemTx2 + '</td>';
+                                tr += '<td>' + v.DiemTx3 + '</td>';
+                                tr += '<td>' + v.DiemTx4 + '</td>';
+                                tr += '<td>' + v.DiemGK + '</td>';
+                                tr += '<td>' + v.DiemCK + '</td>';
+                                tr += ' <td>' + y + '</td>';
+                            }
+
+
+                            //gán điểm tổng kết vào session
+                            sessionStorage.setItem(key, y);
+                            i++;
+
+                            tr += '<td><a class="btn btn-sm btn-outline-warning btnDel" data-id="'
+                                + v.MaDiem + '"> Xóa</a></td>';
+                            tr += '</tr>';
+
+                            $('#DiemHK2').append(tr);
+                        })
+                        //gán session
+                        //var b = sessionStorage.getItem('hk15');
+                        //alert(b);
+                    }
+                    else {
+                        alert(data.msg);
+                    }
+                }
+            })
+        }
+
+        //lấy dữ liệu danh sách môn học gán vào modal
+        function dsMonHoc() {
+            $.ajax({
+                url: '/AD/DsMonHoc',
+                type: 'get',
+                success: function (data) {
+                    if (data.code = 200) {
+                        $.each(data.dsMH, function (k, v) {
+
+                            let tr = '<option value="' + v.maMH + '">' + v.tenMH + '</option>';
+                            $('#dsMonHoc').append(tr);
+                        })
+                    }
+                }
+            })
+        };
+
+        //lấy danh sách giáo viên theo môn học
+        function dsGV(id) {
+
+            $.ajax({
+                url: '/AD/dsGV_ID',
+                type: 'get',
+                data: {
+                    id: id
+                },
+                success: function (data) {
+                    if (data.code = 200) {
+                        $.each(data.dsGV_ID, function (k,v) {
+
+                            let tr = '<option value="' + v.maGV + '">' + v.tenGV + '</option>';
+                            $('#dsGV').append(tr);
+                        })
+                    } else {
+                        alert(data.code);
+                    }
+                }
+            })
+        }
+
+        //button xoa
+        $(document).on('click', '.btnDel', function () {
+
+            //lấy id ở chính thẻ đó
+            let idTB = $(this).data('id');
+            //lấy dữ liệu từ viewData(mã thông báo) để tải lại bình luận
+            var idHS = $("#customInput").data("value");
+            if (confirm("Bạn có chắc xóa?")) {
+                $.ajax({
+                    url: '/AD/deleteDiem',
+                    type: 'post',
+                    data: { maTB: idTB },
+                    success: function (data) {
+                        if (data.code == 200) {
+
+                            $('#DiemHK2').empty();
+                            alert(data.msg);
+                            diemHSHK1(idHS);
+                        } else {
+                            alert(data.msg);
+                        }
+                    }
+
+                })
+            } else {
+                return false;
+            }
+        })
+
+        //thay đổi select
+        $('#dsMonHoc').change(function () {
+            $(this).find(":selected").each(function () {
+                $('#dsGV').empty();
+                // alert($(this).val());
+                dsGV($(this).val());
+            });
+        });
+
+        //button sửa điểm  trong bảng
+        $(document).on('click', '.btnDetail', function () {
+            // $('#myModal').modal();
+            //lấy id
+            let idDiem = $(this).data('id');
+            //goi ham lay chi tiet giao vien
+            $.ajax({
+                url: '/AD/editDiem',
+                type: 'GET',
+                data: {
+                    id: idDiem
+                },
+                success: function (data) {
+                    //neu dung gan data cho form modal
+
+                    if (data.code == 200) {
+
+                        $.each(data.detailGv, function (k, v) {
+
+                            $('#diemTx1').val(v.diemTx1);
+                            $('#diemTx2').val(v.diemTx2);
+                            $('#diemTx3').val(v.diemTx3);
+                            $('#diemTx4').val(v.diemTx4);
+                            $('#diemCK').val(v.diemCK);
+                            $('#diemGK').val(v.diemGK);
+                        })
+
+                        //kiểm tra nút bấm -gán nhiệm vụ
+                        $('#idLop').val(idDiem);
+                        //không cho chỉnh sửa
+
+                        $('#dsGV').prop('readonly', true);
+                        $('#dsMonHoc').prop('readonly', true);
+                        $('#myModal').modal();
+
+
+
+                    } else {
+                        alert(data.msg);
+                    }
+
+                }
+            })
+
+        });
+        </script>
+
+    }

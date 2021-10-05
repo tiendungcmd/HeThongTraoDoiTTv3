@@ -1,0 +1,346 @@
+﻿
+@{
+    ViewBag.Title = "ThongBao";
+}
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Content/admin/jquery.twbsPagination.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="~/Content/admin/paging/jquery.twbsPagination.min.js"></script>
+
+<style>
+    body {
+        color: #404E67;
+        background: #F5F7FA;
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    table, th, td {
+        border: 1px solid #71f8f0;
+        font-size: small;
+    }
+
+    table {
+        border-collapse: collapse;
+    }
+
+    tr:hover {
+        background-color: #ddd;
+        cursor: pointer;
+    }
+</style>
+
+<button id="btnAdd" class="btn btn-success btn-sm"><i class="fa fa-plus" aria-hidden="true"></i>Thêm Thông Báo</button>
+
+
+<!--Model hien thi-->
+
+<div class="container">
+
+    <!-- Trigger the modal with a button -->
+    @*<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" id="btnAdd">Open Modal</button>*@
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header ">
+                    <h3 class="modal-title">Thông tin thông báo</h3>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+                </div>
+                <div class="modal-body">
+                    <input type="text" hidden id="idLop" value="" />
+                    <!-- form nhập thông tin-->
+                    <!--Tiêu đề-->
+                    <div class="form-row">
+                        <div class="form-group col-md-8">
+                            <label for="inputEmail4">Tiêu đề</label>
+                            <input type="text" class="form-control" id="tieuDe" placeholder="Thông báo...">
+                        </div>
+                        <div class="form-group col-md-4">
+
+
+                            <label for="inputEmail4">Mã TB</label>
+                            <input type="text" class="form-control" id="maTB" placeholder="TB2021..">
+                        </div>
+                    </div>
+                    <!--Nôi dung-->
+                    <div class="form-group">
+                        <label for="inputAddress2">Nội Dung</label>
+                        <textarea class="form-control" id="noiDung" rows="5"></textarea>
+
+                    </div>
+                    <!---->
+                    @*<div class="form-group">
+                        <label for="exampleFormControlFile1">File</label>
+                        <input type="file" class="form-control-file" id="file">
+                    </div>*@
+                    <div class="form-row">
+                        <!--Lớp-->
+                        <div class="form-group col-md-4">
+                            <label for="inputState">Gửi Đến</label>
+                            <select id="dsLop" class="form-control">
+                                <option value="1" selected>Mọi Người</option>
+
+                            </select>
+                        </div>
+                        <!--học Sinh-->
+                        <div class="form-group col-md-4">
+                            <label for="inputState">Học Sinh</label>
+                            <select id="dsHS" class="form-control">
+                            </select>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="btnSubmit">Xác nhận</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div class="container">
+    <h3>Danh sách thông báo</h3>
+    <div class="row">
+        <!--Danh sách thông báo-->
+
+        <table class="table" id="dsTB">
+            <tr>
+            </tr>
+        </table>
+        <div id="pagination" class="pagination">
+
+        </div>
+
+        @*<div class="col-7">
+                <table id="dsBl">
+                </table>
+            </div>*@
+    </div>
+</div>
+@section scripts{
+    <script>
+        //khai báo biến để phân trang
+        var ad = {
+            pageSize: 5,
+            pageIndex: 1
+        }
+        //hàm chính
+        $(function () {
+            loadDsTB();
+            LoadDsLop();
+            // LoadDSHS();
+
+            //let monHoc = $('#dsLop').val();
+            //if (monHoc != 1) {
+            //    LoadDSHS(monHoc);
+            //}
+
+        })
+
+        //bấm vào button xác nhận
+        $('#btnSubmit').click(function () {
+            //lấy date hiện tại
+            var d = new Date();
+            var date = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getMinutes();
+            //alert('ok');
+            let tieuDe = $('#tieuDe').val();
+            let maTB = $('#maTB').val().trim();
+            let noiDung = $('#noiDung').val();
+            var maNhan = $('#dsLop').val();
+            if (maNhan != 1) {
+                var maNhan = $('#dsHS').val();
+                
+            } else {
+                var maNhan = 1;
+            }
+
+            //kiểm tra dữ liệu nhập
+            if (tieuDe.length == 0 || maTB.length == 0 || noiDung.length == 0 || maNhan == 0) {
+                alert('Bạn phải nhập đủ các trường ! Mời nhập lại!');
+                return;
+            } 
+
+            $.ajax({
+                url: '/AD/addTB',
+                type: 'post',
+                data: {
+                    TieuDe: tieuDe,
+                    MaThongBao: maTB,
+                    NoiDung: noiDung,
+                    MaNhan: maNhan,
+                    NgayBL: date
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        alert(data.msg);
+                        //$('#tieuDe').val('');
+                        //$('#maTB').val('');
+                        //$('#noiDung').val('');
+
+                        $('#myModal').modal('hide');
+                        loadDsTB();
+                    } else {
+                        alert(data.msg);
+                    }
+                }
+            })
+        })
+
+       
+
+        //thêm thông báo -- button thêm thông báo
+        $('#btnAdd').click(function () {
+
+            $('#myModal').modal();
+        })
+
+     
+        //button xoa
+        $(document).on('click', '.btnDel', function () {
+
+            //lấy id ở chính thẻ đó
+            let idTB = $(this).data('id');
+
+            if (confirm("Bạn có chắc xóa?")) {
+                $.ajax({
+                    url: '/AD/deleteTB',
+                    type: 'post',
+                    data: { maTB: idTB },
+                    success: function (data) {
+                        if (data.code == 200) {
+
+                            $('#dsTB').empty();
+                            alert(data.msg);
+                            loadDsTB();
+                        } else {
+                            alert(data.msg);
+                        }
+                    }
+
+                })
+            } else {
+                return false;
+            }
+        })
+        //lấy danh sách thông báo
+        function loadDsTB() {
+            $.ajax({
+                url: '/AD/dsTB',
+                type: 'get',
+                data: {
+                    page: ad.pageIndex,
+                    pageSize: ad.pageSize
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+
+                        //xóa danh sách
+                        $('#dsTB').empty();
+
+                        $.each(data.dsTb, function (k, v) {
+                            let tr = '<tr>'
+                            // tr += '<td>' + v.TieuDe + '</td>';
+                            // tr += '<td><a class="btndetail btn"  data-id="' + v.MaThongBao + '" > ' + v.TieuDe + ' </a></td>';
+                            tr += '<td> <a class="btn" href="/AD/DetailThongBao/' + v.MaThongBao + '"><b> ' + v.TieuDe + '</b> </a></td>';
+
+                            tr += '<td><a class="btn btn-sx btn-primary" href="/AD/DetailThongBao/'
+                                + v.MaThongBao + '"><i class="fa fa-info " aria-hidden="true"></i> Đọc    </a> ';
+                            tr += '<button class="btn btn-sx btn-danger btnDel" data-id="'
+                                + v.MaThongBao + '"><i class="fa fa-trash" aria-hidden="true"></i> Xóa</button></td> ';
+
+                            tr += '</tr>';
+                            $('#dsTB').append(tr);
+                        })
+
+                        // add data
+                        page(data.total, function () {
+                            loadDsTB();
+                        })
+                    }
+                    else {
+                        alert('Loi cai gi y' + data.msg);
+                    }
+                }
+            })
+        }
+
+        //lấy danh sách lớp gán vào modal
+        function LoadDsLop() {
+            // dùng ajax load danh sách lớp
+            $.ajax({
+                url: '/AD/DsLop',
+                type: 'get',
+                success: function (data) {
+                    if (data.code == 200) {
+                        //gán DL vào html
+                        $.each(data.ds, function (k, v) {
+                            let tr = '<option  value="' + v.MaLop + '">' + v.TenLop + '</option>';
+                            $('#dsLop').append(tr);
+                        })
+
+                    }
+                }
+            })
+        };
+     
+
+        //lấy danh sách học sinh gán vào modal
+        function LoadDSHS(id) {
+            //     let x = '6A1';
+            $.ajax({
+                url: '/AD/loadDSHS',
+                type: 'get',
+                data: { idLop: id },
+                success: function (data) {
+                    if (data.code == 200) {
+                        //gán DL vào html
+                        $.each(data.dsHS, function (k, v) {
+                            let tr = '<option value="' + v.MaHS + '">' + v.TenHS + '</option>';
+                            $('#dsHS').append(tr);
+
+                        })
+                    } else {
+                        alert(data.code);
+                    }
+                }
+            })
+        }
+
+        //thay đổi select 
+        $('#dsLop').change(function () {
+            $(this).find(":selected").each(function () {
+                $('#dsHS').empty();
+                // alert($(this).val());
+                LoadDSHS($(this).val());
+            });
+        });
+        // phân trang
+        function page(totalRow, callback) {
+            var totalPage = Math.ceil(totalRow / ad.pageSize);
+            $('#pagination').twbsPagination({
+                totalPages: totalPage,
+                visiblePages: 3,
+                first: "<<",
+                last: ">>",
+                next: ">",
+                prev: "<",
+                onPageClick: function (event, page) {
+                    ad.pageIndex = page;
+                    setTimeout(callback, 300);
+                }
+            });
+        };
+    </script>
+
+}

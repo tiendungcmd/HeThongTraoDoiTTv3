@@ -1,0 +1,111 @@
+﻿<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+<button class="btn btn-sm btn-success" id="btnAdd"><i class="fa fa-plus" aria-hidden="true"></i>Thêm Giáo Viên</button>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Tên lớp
+            </th>
+            <th>
+                Phòng
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="tblDsLop"></tbody>
+</table>
+<!--Model hien thi-->
+
+<div class="container">
+
+    <!-- Trigger the modal with a button -->
+    @*<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" id="btnAdd">Open Modal</button>*@
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+                </div>
+                <div class="modal-body">
+                    <p>Modal body text goes here.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        var ad = {
+            pageSize: 5,
+            pageIndex: 1
+        }
+        // ham chính
+        $(function () {
+            LoadDsLop();
+        });
+        //button thêm
+        $('#btnAdd').click(function () {
+            $('#myModal').modal();
+        })
+
+        // phân trang
+        function page(totalRow, callback) {
+            var totalPage = Math.ceil(totalRow / ad.pageSize);
+            $('#pagination').twbsPagination({
+                totalPages: totalPage,
+                visiblePages: 3,
+                first: "<<",
+                last: ">>",
+                next: ">",
+                prev: "<",
+                onPageClick: function (event, page) {
+                    ad.pageIndex = page;
+                    setTimeout(callback, 200);
+                }
+            });
+        };
+
+        //lấy danh sách lớp
+        function LoadDsLop() {
+            // dùng ajax load danh sách lớp
+            $.ajax({
+                url: '/AD/DsLop',
+                type: 'get',
+                success: function (data) {
+                    if (data.code == 200) {
+                        //gán DL vào html
+                        $.each(data.ds, function (k, v) {
+                            let tr = '<tr>'
+                            tr += '<td>' + v.TenLop + '</td>';
+                            tr += '<td>' + v.PhongHoc + '</td>';
+                            tr += '<td>';
+                            tr += '<button class="btn btn-info" name ="view"><i class="fa fa-info-circle" aria-hidden="true"></i></button> '
+                            tr += '</td>';
+                            tr += '</tr>';
+                            $('#tblDsLop').append(tr);
+
+                        })
+
+                    }
+
+
+                }
+            })
+        };
+
+
+
+    </script>
+

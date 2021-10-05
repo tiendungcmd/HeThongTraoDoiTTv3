@@ -1,0 +1,206 @@
+﻿@model IEnumerable<DeMo.Models.model.ThongBao>
+
+@{
+    Layout = "~/Views/Shared/LayoutUser.cshtml";
+}
+<script src="~/Content/admin/jquery.twbsPagination.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="~/Content/admin/paging/jquery.twbsPagination.min.js"></script>
+
+<style>
+    body {
+        color: #404E67;
+        background: #F5F7FA;
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    table, th, td {
+        border: 1px solid #71f8f0;
+        font-size: small;
+    }
+
+    table {
+        border-collapse: collapse;
+    }
+
+    tr:hover {
+        background-color: #ddd;
+        cursor: pointer;
+    }
+</style>
+
+
+
+
+<!--Model hien thi-->
+
+<div class="container">
+
+    <!-- Trigger the modal with a button -->
+    @*<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" id="btnAdd">Open Modal</button>*@
+
+
+</div>
+
+
+<div class="container">
+    <h3>Danh sách thông báo</h3>
+    <div class="row">
+        <!--Danh sách thông báo-->
+
+        <table class="table" id="dsTB">
+            <tr>
+            </tr>
+        </table>
+        <div id="pagination" class="pagination">
+
+        </div>
+
+        @*<div class="col-7">
+                <table id="dsBl">
+                </table>
+            </div>*@
+    </div>
+</div>
+@section scripts{
+    <script>
+        //khai báo biến để phân trang
+        var ad = {
+            pageSize: 5,
+            pageIndex: 1
+        }
+        //hàm chính
+        $(function () {
+            loadDsTB();
+        })
+
+
+        //lấy danh sách thông báo
+        function loadDsTB() {
+            $.ajax({
+                url: '/User/dsTB',
+                type: 'get',
+                data: {
+                    page: ad.pageIndex,
+                    pageSize: ad.pageSize
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+
+                        //xóa danh sách
+                        $('#dsTB').empty();
+
+                        $.each(data.dsTb, function (k, v) {
+                            let tr = '<tr>'
+                            // tr += '<td>' + v.TieuDe + '</td>';
+                            // tr += '<td><a class="btndetail btn"  data-id="' + v.MaThongBao + '" > ' + v.TieuDe + ' </a></td>';
+                            tr += '<td> <a class="btn" href="/User/DocThongBao/' + v.MaThongBao + '"><b> ' + v.TieuDe + '</b> </a></td>';
+
+                            tr += '<td><a class="btn btn-sx btn-primary" href="/User/DocThongBao/'
+                                + v.MaThongBao + '"><i class="fa fa-info " aria-hidden="true"></i> Đọc</a></td> ';
+
+
+                            tr += '</tr>';
+                            $('#dsTB').append(tr);
+                        })
+
+                        // add data
+                        page(data.total, function () {
+                            loadDsTB();
+                        })
+                    }
+                    else {
+                        alert('Loi cai gi y' + data.msg);
+                    }
+                }
+            })
+        }
+
+
+
+
+        // phân trang
+        function page(totalRow, callback) {
+            var totalPage = Math.ceil(totalRow / ad.pageSize);
+            $('#pagination').twbsPagination({
+                totalPages: totalPage,
+                visiblePages: 3,
+                first: "<<",
+                last: ">>",
+                next: ">",
+                prev: "<",
+                onPageClick: function (event, page) {
+                    ad.pageIndex = page;
+                    setTimeout(callback, 300);
+                }
+            });
+        };
+    </script>
+
+}
+@*<!DOCTYPE html>
+
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>ThongBao</title>
+        <style type="text/css">
+            table, th, td {
+                border-top: 1px solid #ccc;
+                border-bottom: 1px solid #ccc;
+                padding:5px;
+
+            }
+
+            table {
+                border-collapse: collapse;
+                width:70%;
+            }
+
+            th, td {
+                text-align: left;
+                padding: 10px;
+            }
+            tr:hover {
+                background-color: #ddd;
+                cursor: pointer;
+            }
+            .btn {
+                background-color: #808080; /* Green */
+                border-radius: 8px;
+                color: white;
+                padding: 10px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 13px;
+                margin: 0px;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body>
+
+        <div >
+            <table >
+                    <th>
+                      Danh Sách Thông báo:
+                    </th>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                          @Html.DisplayFor(modelItem => item.TieuDe)
+                        </td>
+
+                        <td>
+                            <a class="btn" href="/User/DocThongBao/@item.MaThongBao"> Đọc </a>
+
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+    </body>
+    </html>*@

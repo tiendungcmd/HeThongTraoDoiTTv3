@@ -1,0 +1,126 @@
+﻿@model IEnumerable<DeMo.Models.DiemGV>
+@{
+    Layout = "~/Views/Shared/LayoutUser.cshtml";
+}
+@{
+    ViewBag.Title = "CuoiKi";
+}
+@{
+    var id = Session["MaHS"];
+}
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        .btn {
+            background-color: #808080; /* Green */
+            border-radius:8px;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 13px;
+            margin: 0px;
+            cursor: pointer;
+
+        }
+        .disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
+
+    <div class="tach">
+        <b>  Học Sinh: </b>  @ViewData["TenHS"]   ---- <b>Năm Học: </b>@ViewData["TenNH"]
+    </div>
+    <div>
+        <a class="btn" href="/User/DiemHK1/@id"> KẾT QUẢ HỌC KÌ 1 </a>
+        <a class="btn" href="/User/DiemHK2/@id"> KẾT QUẢ HỌC KÌ 2 </a>
+        <a class="btn disabled"> TỔNG KẾT </a>
+    </div>
+        <div style="float:left">
+            <table  class="table">
+                <tr>
+                    <th>
+                        Tên Môn Học
+                    </th>
+                    <th>
+                        Điểm TBCN
+                    </th>        
+                </tr>
+                @{ int i = 0;
+                    double tbcn = 0;}
+                @foreach (var item in Model)
+                {
+            <tr>
+
+                <!-- Tính điểm trung bình cả năm nhóm môn học không tính điểm -->
+                @if (item.Nhom < 4)
+                {
+                    <td>@item.TenMH</td>
+                    <td>
+                        @{ var x = @Session["tb" + @i];}
+                        @if (Convert.ToDouble(x) < 5)
+                        {
+                            <p>KD</p>
+                        }
+                        else
+                        {
+                            <p>D</p>
+                        }
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TenMH)
+                    </td>
+                    <!-- Tính điểm trung bình cả năm -->
+                    <td>
+                        @{ var x = @Session["a" + @i];
+                            var y = @Session["b" + @i];
+                            var z = (Convert.ToDouble(@Session["a" + @i]) + Convert.ToDouble(@Session["b" + @i]) * 2) / 3;
+                            var tb = Math.Round(z, 1);
+                        }
+                        <p>@tb </p>
+                        @{
+                            tbcn = tbcn + tb;
+                            var tbcn1 = tbcn / 11;
+                            var tbcn2 = Math.Round(tbcn1, 1);
+                            Session["tbvc"] = tbcn2;
+                        }
+                        @{
+                            i++;
+                        }
+                    </td>
+                }
+            </tr>
+                }
+            </table>
+        </div>
+        <div style="float:inherit">
+            <b>   Tổng Kết</b>
+            <br />
+            <b>Điểm TBCN:  @Session["tbvc"]</b>
+            <br />
+                @if (Convert.ToDouble(Session["tbvc"]) >= 8)
+                {
+        <b>  Học Lực : Giỏi </b>
+                }
+                @if (Convert.ToDouble(Session["tbvc"]) >= 6.5 && Convert.ToDouble(Session["tbvc"]) < 8)
+                {
+                 <b>  Học Lực :   Khá</b>
+                }
+                @if (Convert.ToDouble(Session["tbvc"]) >= 5 && Convert.ToDouble(Session["tbvc"]) < 6.5)
+                {
+                  <b>  Học Lực :  Khá </b>
+                }
+                @if (Convert.ToDouble(Session["tbvc"]) > 3.5 && Convert.ToDouble(Session["tbvc"]) < 5)
+                {
+                 <b>  Học Lực : Trung Bình</b>
+                }
+        </div>
+    
+   

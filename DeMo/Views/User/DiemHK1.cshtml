@@ -1,0 +1,165 @@
+﻿@model IEnumerable<DeMo.Models.DiemGV>
+
+@{
+    Layout = "~/Views/Shared/LayoutUser.cshtml";
+}
+@{
+    ViewBag.Title = "Diem Hoc Ki 1";
+}
+@{
+    var id = Session["MaHS"];
+}
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        .btn {
+            background-color: #808080; /* Green */
+            border-radius: 8px;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 13px;
+            margin: 0px;
+            cursor: pointer;
+        }
+
+        .disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
+
+    <div class="tach">
+        <b>  Học Sinh: </b>  @ViewData["TenHS"]   ---- <b>Năm Học: </b>@ViewData["TenNH"]
+    </div>
+    <div>
+        <table class="table">
+           
+                <a class="btn disabled"> KẾT QUẢ HỌC KÌ 1 </a>
+                <a class="btn" href="/User/DiemHK2/@id"> KẾT QUẢ HỌC KÌ 2 </a>
+                
+           
+            <tr>
+                <th> Môn Học</th>
+
+                <th colspan="4"> Điểm Thường Xuyên</th>
+
+                <th> Điểm Giữa Kì</th>
+                <th> Điểm Cuối Kì</th>
+                <th> Điểm Tổng Kết</th>
+
+            </tr>
+            <tr></tr>
+            @{ int i = 0;}
+            @foreach (var item in Model)
+            {
+
+                <tr>
+
+                    @if (item.Nhom < 4)
+                    {
+                        <td>@item.TenMH</td>
+                        <td>
+                            @if (item.DiemTx1 < 5)
+                            {
+                                <p>KD</p>
+                            }
+                            else
+                            {
+                                <p>D</p>
+                            }
+                        </td>
+                        <td>
+                            @if (item.DiemTx2 < 5)
+                            {
+                                <p>KD</p>
+                            }
+                            else
+                            {
+                                <p>D</p>
+                            }
+                        </td>
+                        <td>
+                            @if (item.DiemTx3 < 5)
+                            {
+                                <p>KD</p>
+                            }
+                            else
+                            {
+                                <p>D</p>
+                            }
+                        </td>
+                        <td>
+
+                            @if (item.DiemTx4 < 5)
+                            {
+                                <p>KD</p>
+                            }
+                            else
+                            {
+                                <p>D</p>
+                            }
+                        </td>
+                        <td>
+                            @if (item.DiemGK < 5)
+                            {
+                                <p>KD</p>
+                            }
+                            else
+                            {
+                                <p>D</p>
+                            }
+                        </td>
+                        <td>
+                            @if (item.DiemCK < 5)
+                            {
+                                <p>KD</p>
+                            }
+                            else
+                            {
+                                <p>D</p>
+                            }
+                        </td>
+                        <td>
+                            @{var x = (item.DiemTx1 + item.DiemTx2 + item.DiemTx3 + item.DiemTx4 + item.DiemGK * 2 + (item.DiemCK * 3));
+                                if (x < 5)
+                                {
+                                    <p>KD</p>
+                                }
+                                else
+                                {
+                                    <p>D</p>
+                                }
+                            }
+                        </td>
+                    }
+                    else
+                    {
+                        <td> @item.TenMH</td>
+                        <td>@item.DiemTx1</td>
+                        <td> @item.DiemTx2</td>
+                        <td>  @item.DiemTx3 </td>
+                        <td> @item.DiemTx4</td>
+                        <td>@item.DiemGK</td>
+                        <td>@item.DiemCK</td>
+                        <td>
+                            @{var x = (item.DiemTx1 + item.DiemTx2 + item.DiemTx3 + item.DiemTx4 + item.DiemGK * 2 + (item.DiemCK * 3));
+                                double y = Convert.ToDouble(x) / 9;
+                                double z = Math.Round(y, 1);
+                            }
+                            <p>@z</p>
+                            @{Session["a" + @i] = @z;
+                                i++;}
+                           
+                        </td>
+                    }
+                </tr>
+            }
+
+        </table>
+    </div>

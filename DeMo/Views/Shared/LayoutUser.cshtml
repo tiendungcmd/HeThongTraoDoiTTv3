@@ -1,0 +1,63 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hệ thống trao đổi thông tin</title>
+
+    <link href="~/Content/user/menu.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/Content/admin/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/admin/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/admin/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/Content/admin/plugins/fontawesome-free/css/all.min.css">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/Content/admin/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/admin/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/admin/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="~/Content/admin/dist/css/adminlte.min.css">
+</head>
+<body>
+    <header>
+        <img src="~/Content/image/logo1.png" alt="Kết Quả học Tập" />
+
+        @{
+            var id = Session["MaHS"];
+        }
+        @{
+            if (Session["MaHS"] == null)
+            {
+                Response.Redirect("~/Login");
+
+            }
+        }
+    </header>
+    <nav class="menu">
+        <ul>
+            <li><a href="/User" title="Trang chủ">THÔNG TIN HỌC SINH</a></li>
+            <li><a href="/User/DiemHK1/@id" title="Giới thiệu">KẾT QUẢ HỌC TẬP</a></li>
+            <li>
+                <a href="/User/ThongBao" title="Sản phẩm">THÔNG BÁO</a>
+            </li>
+            <li>
+                <a href="/User/DoiMK" title="Dịch vụ">ĐỔI MẬT KHẨU</a>
+            </li>
+            <li><a href="/User/Logout" title="Liện hệ">ĐĂNG XUẤT</a></li>
+        </ul>
+    </nav>
+
+
+
+    @RenderBody()
+
+
+</body>
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+<script src="~/Content/admin/paging/paginate.js"></script>
+<script src="~/Content/admin/paging/jquery.twbsPagination.min.js"></script>
+@RenderSection("scripts", required: false)
+</html>

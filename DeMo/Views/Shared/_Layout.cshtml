@@ -12,33 +12,33 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="~/Content/admin/plugins/fontawesome-free/css/all.min.css">
     <!-- DataTables -->
+    <link rel="stylesheet" href="~/Content/admin/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="~/Content/admin/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="~/Content/admin/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
     <link rel="stylesheet" href="~/Content/admin/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
-    <!-- Theme style -->
-    <link rel="stylesheet" href="~/Content/admin/dist/css/adminlte.min.css">
-    <!--Style cho bảng trong admin-->
-   @*<style>
-        body {
-            color: #404E67;
-            background: #F5F7FA;
-            font-family: 'Open Sans', sans-serif;
-        }
-        table, th, td {
-            border: 1px solid #91f5e5;
-            font-size:small;
-        }
 
-        table {
-            border-collapse: collapse;
-        }
 
-        tr:hover {
-            background-color: #ddd;
-            cursor: pointer;
-        }
-       
-    </style>*@
+    @*<style>
+            body {
+                color: #404E67;
+                background: #F5F7FA;
+                font-family: 'Open Sans', sans-serif;
+            }
+            table, th, td {
+                border: 1px solid #91f5e5;
+                font-size:small;
+            }
+
+            table {
+                border-collapse: collapse;
+            }
+
+            tr:hover {
+                background-color: #ddd;
+                cursor: pointer;
+            }
+
+        </style>*@
 </head>
 <body class=" sidebar-mini">
     <div class="wrapper">
@@ -47,7 +47,7 @@
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
-            <a href="../../index3.html" class="brand-link">
+            <a href="/AD/Index" class="brand-link">
                 <img src="~/Content/admin/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
                 <span class="brand-text font-weight-light">Quản Lý</span>
             </a>
@@ -60,7 +60,7 @@
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                         <!-- Add icons to the links using the .nav-icon class
-                        with font-awesome or any other icon font library -->
+    with font-awesome or any other icon font library -->
 
 
                         @{
@@ -80,6 +80,14 @@
                             {
                                 <li class="nav-item">
                                     <a href="/GiaoViens" class="nav-link">
+                                        <i class="nav-icon fas fa-user"></i>
+                                        <p>
+                                            Thông tin của tôi
+                                        </p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/GiaoViens" class="nav-link">
                                         <i class="nav-icon fas fa-th"></i>
                                         <p>
                                             Danh Sách Học Sinh
@@ -94,21 +102,14 @@
                                         </p>
                                     </a>
                                 </li>
-                                <li class="nav-item">
-                                    <a href="/GiaoVien/Logout" class="nav-link">
-                                        <i class="fas fa-sliders-h"></i>
-                                        <p>
-                                            Đăng Xuất
-                                        </p>
-                                    </a>
-                                </li>
+
 
                             }
-                            else if(Session["UserName"]!=null)
+                            else if (Session["UserName"] != null)
                             {
                                 <li class="nav-item">
                                     <a href="/AD/Index" class="nav-link">
-                                        <i class="nav-icon fas fa-copy"></i>
+                                        <i class="fas fa fa-address-book"></i>
                                         <p>
                                             DS Giáo Viên
                                         </p>
@@ -116,30 +117,45 @@
                                 </li>
                                 <li class="nav-item">
                                     <a href="/AD/Lop" class="nav-link">
-                                        <i class="nav-icon fas fa-copy"></i>
-                                        <p >
+                                        <i class=" fas fa-copy"></i>
+                                        <p>
                                             DS Lớp Học
                                         </p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="/AD/ThongBao" class="nav-link">
-                                        <i class="nav-icon fas fa-copy"></i>
+                                        <i class=" fas fa-copy"></i>
                                         <p>
                                             Quản Lý Thông Báo
                                         </p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/AD/Logout" class="nav-link">
-                                        <i class="fas fa-sliders-h"></i>
+                                    <a href="/AD/TaiKhoan" class="nav-link">
+                                        <i class="fas fa-circle nav-icon"></i>
+                                        <p>Danh sách phụ huynh</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a href="/AD/TaiKhoan" class="nav-link">
+                                        <i class="fas fa-indent"></i>
                                         <p>
-                                            Đăng Xuất
+                                            Quản Lý Tài Khoản
                                         </p>
                                     </a>
                                 </li>
 
                             }
+                            <li class="nav-item">
+                                <a href="/Login" class="nav-link">
+                                    <i class="fas fa-sliders-h"></i>
+                                    <p>
+                                        Đăng Xuất
+                                    </p>
+                                </a>
+                            </li>
 
                         }
 
@@ -179,5 +195,9 @@
     <script src="~/Content/admin/paging/paginate.js"></script>
     <script src="~/Content/admin/paging/jquery.twbsPagination.min.js"></script>
     @RenderSection("scripts", required: false)
+    <script src="~/Content/admin/dist/js/adminlte.min.js"></script>
+
+    <!--Style cho bảng trong admin-->
+
 </body>
 </html>

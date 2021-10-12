@@ -28,6 +28,12 @@
         background-color: #ddd;
         cursor: pointer;
     }
+    .pagination {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+    }
+   
 </style>
 
 <div><p>Danh sách giáo viên THCS</p></div>
@@ -63,9 +69,17 @@
     <tbody id="tblDsGV"></tbody>
 
 </table>
-<div id="pagination" class="pagination">
+<div id="total">
 
 </div>
+<footer class="main-footer">
+    <div id="pagination" class="pagination">
+
+    </div>
+
+</footer>
+
+
 <!--Model hien thi-->
 
 <div class="container">
@@ -400,6 +414,7 @@
 
                         //làm trống table
                         $('#tblDsGV').empty();
+                        $('#total').empty();
                         $.each(data.dsGv, function (k, v) {
 
                             let tr = '<tr>'
@@ -422,7 +437,8 @@
                             $('#tblDsGV').append(tr);
 
                         })
-
+                        let tr = 'Tổng số giáo viên: ' + data.total;
+                        $('#total').append(tr);
                         // add data
                         page(data.total, function () {
                             LoadDsGV();

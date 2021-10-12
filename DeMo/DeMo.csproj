@@ -2412,6 +2412,7 @@
     <Content Include="Views\AD\diemHSHK2.cshtml" />
     <Content Include="Views\AD\diemCuoiKi.cshtml" />
     <Content Include="Views\GiaoViens\Index.cshtml" />
+    <Content Include="Views\AD\TaiKhoan.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -319,11 +319,15 @@
 
         //thay đổi select 
         $('#dsLop').change(function () {
-            $(this).find(":selected").each(function () {
-                $('#dsHS').empty();
-                // alert($(this).val());
-                LoadDSHS($(this).val());
-            });
+            //lấy giá trị được chọn
+            var id = $(this).find(":selected").val();
+            $('#dsHS').empty();
+            LoadDSHS($(this).val());
+            //$(this).find(":selected").each(function () {
+            //    $('#dsHS').empty();
+            //    // alert($(this).val());
+            //    LoadDSHS($(this).val());
+            //});
         });
         // phân trang
         function page(totalRow, callback) {

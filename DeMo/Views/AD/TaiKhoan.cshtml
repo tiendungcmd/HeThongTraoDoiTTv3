@@ -1,0 +1,83 @@
+﻿
+@{
+    ViewBag.Title = "TaiKhoan";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<!--Nút thêm tài khoản-->
+<button id="btnAdd" class="btn btn-success btn-sm">
+    Thêm tài khoản
+</button>
+<h3>Danh sách tài khoản</h3>
+<!-- Modal hiển thị của sổ thêm tài khoản-->
+<div class="container">
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header ">
+                    <h3 class="modal-title">Thông tin tài khoản</h3>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+                </div>
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="inputEmail4">Tên tài khoản</label>
+                            <input type="text" class="form-control" id="tenTK">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="inputPassword4">Mật khẩu</label>
+                            <input type="text" class="form-control" id="matKhau">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="btnSubmit">Xác nhận</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        //hiển thị form điền thông tin
+        $('#btnAdd').click(function () {
+            console.log('dung');
+            $('#myModal').modal();
+        });
+        //nút lưu trên form điền thông tin
+        //Xác nhận
+        $('#btnSubmit').click(function () {
+            let tenTaiKhoan = $('#tenTK').val().trim();
+            let MatKhau = $('#matKhau').val().trim();
+            console.log(tenTaiKhoan);
+            console.log("alo");
+            if (!tenTaiKhoan || !MatKhau) {
+                alert('Vui lòng nhập đầy đủ thông tin!')
+                return;
+            }
+
+            //thêm dữ liệu
+            $.ajax({
+                url: '/AD/AddTaiKhoan',
+                type: 'post',
+                data: {
+                    tenTK: tenTaiKhoan,
+                    matKhau: MatKhau
+                },
+                success: function (data) {
+
+                    if (data.code == 200) {
+                        alert(data.msg);
+                        $('#myModal').modal('hide');
+                    } else {
+                        alert(data.msg);
+                    }
+                }
+            })
+        })
+    </script>
+}

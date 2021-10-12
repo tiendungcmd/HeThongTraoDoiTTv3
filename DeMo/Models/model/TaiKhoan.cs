@@ -24,6 +24,8 @@ namespace DeMo.Models.model
         [StringLength(8)]
         public string MaGV { get; set; }
 
+        [StringLength(50)]
+        public string token { get; set; }
         public virtual GiaoVien GiaoVien { get; set; }
 
         public virtual PhuHuynh PhuHuynh { get; set; }

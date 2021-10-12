@@ -886,5 +886,37 @@ namespace DeMo.Controllers
                 return Json(new { code = 500, msg = "Xóa không thành công" }, JsonRequestBehavior.AllowGet);
             }
         }
+        //view quản lý tài khoản
+        public ActionResult TaiKhoan()
+        {
+            return View();
+        }
+        //lấy danh sách tài khoản
+        //public JsonResult DsTaiKhoan()
+        //{
+        //    var dsTaiKhoan = from taikhoan in db.TaiKhoans select taikhoan;
+        //    return Json(new { code = 200,dsTaiKhoan = dsTaiKhoan }, JsonRequestBehavior.AllowGet);
+        //}
+        //thêm tài khoản
+
+        public JsonResult AddTaiKhoan(string tenTK,string matKhau)
+        {
+            Console.WriteLine("va");
+            //kiểm tra tên tài khoản đã có chưa
+            var tk = from taikhoan in db.TaiKhoans where taikhoan.TenTk == tenTK select taikhoan;
+            if (tk.Count() == 0)
+            {
+                TaiKhoan taikhoan = new TaiKhoan();
+                taikhoan.TenTk = tenTK;
+                taikhoan.MatKhau = matKhau;
+                db.TaiKhoans.Add(taikhoan);
+                db.SaveChanges();
+                return Json(new { code = 200, msg = "Thêm thành công!" }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new { code = 500, msg = "Tên tài khoản đã tồn tại!" }, JsonRequestBehavior.AllowGet);
+            }
+        }
     }
 }
